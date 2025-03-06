@@ -27,16 +27,16 @@ class SeekTrimmerView @JvmOverloads constructor(context: Context, attrs: Attribu
         LayoutInflater.from(context).inflate(R.layout.seek_trimmer, this, true)
     }
 
-    override fun getTimeLineView(): TimeLineView = findViewById(R.id.timeLineView)
+    override fun obtainTimeLineView(): TimeLineView = findViewById(R.id.timeLineView)
 
-    override fun getProgressBarView(): ProgressBarViewMultiple = findViewById(R.id.timeVideoView)
+    override fun obtainProgressBarView(): ProgressBarViewMultiple = findViewById(R.id.timeVideoView)
 
-    override fun getTimeInfoContainer(): View = findViewById(R.id.timeTextContainer)
+    override fun obtainTimeInfoContainer(): View = findViewById(R.id.timeTextContainer)
 
-    override fun getPlayView(): View = findViewById(R.id.playIndicatorView)
+    override fun obtainPlayView(): View = findViewById(R.id.playIndicatorView)
     fun getBackView(): View = findViewById(R.id.backgroundView)
 
-    override fun getRangeSeekBarView(): RangeSeekBarViewMultiple = findViewById(R.id.rangeSeekBarView)
+    override fun obtainRangeSeekBarView(): RangeSeekBarViewMultiple = findViewById(R.id.rangeSeekBarViewMultiple)
 
     override fun onRangeUpdated(startTimeInMs: Int,  endTimeInMs: Int) {
         val seconds = "sec"

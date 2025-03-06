@@ -13,8 +13,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "APPLICATION_ID", "\"${project.properties["APPLICATION_ID"]}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildFeatures {
+        buildConfig = true //  Ensure this is enabled
     }
 
     buildTypes {

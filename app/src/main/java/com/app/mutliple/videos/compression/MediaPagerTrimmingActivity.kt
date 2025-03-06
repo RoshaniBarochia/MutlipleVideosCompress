@@ -49,6 +49,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.app.mutliple.videos.compression.adapter.MediaShowTrimPagerAdapter
+import com.app.mutliple.videos.compression.trimmingvideo.RangeSeekBarViewMultiple
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -98,6 +99,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     private lateinit var tvDoneAddMedia: TextView
     private lateinit var lyt_bottom: LinearLayout
     private lateinit var videoTrimmerView: SeekTrimmerView
+    private lateinit var rangeSeekBarView: RangeSeekBarViewMultiple
+    private lateinit var trimmingContainer: FrameLayout
     private lateinit var frameLayout2: FrameLayout
     private lateinit var ivProgressbarLogin: ProgressBar
     private lateinit var imgAttachedImage: ImageView
@@ -114,6 +117,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         list_media = findViewById(R.id.list_media)
         tvDoneAddMedia = findViewById(R.id.tvDoneAddMedia)
         videoTrimmerView = findViewById(R.id.videoTrimmerView)
+        rangeSeekBarView=videoTrimmerView.findViewById(R.id.rangeSeekBarViewMultiple)
+        trimmingContainer=videoTrimmerView.findViewById(R.id.trimmingContainer)
         frameLayout2 = findViewById(R.id.frameLayout2)
         ivProgressbarLogin = findViewById(R.id.ivProgressbarLogin)
         imgAttachedImage = findViewById(R.id.imgAttachedImage)
@@ -252,8 +257,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
             lyt_bottom.isEnabled = false
             list_media.isEnabled = false
-            videoTrimmerView.rangeSeekBarView.isEnabled=false
-            videoTrimmerView.rangeSeekBarView.isClickable=false
+            rangeSeekBarView.isEnabled=false
+            rangeSeekBarView.isClickable=false
             ivProgressbarLogin.visibility = View.VISIBLE
             tvDoneAddMedia.background = ContextCompat.getDrawable(
                 this@MediaPagerTrimmingActivity,
@@ -286,7 +291,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
                         val fileUri = FileProvider.getUriForFile(
                             applicationContext,
-                            com.app.mutliple.videos.compression.BuildConfig.APPLICATION_ID + ".fileprovider",
+                            "com.app.mutliple.videos.compression.fileprovider",
                             file
                         )
                         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
@@ -304,7 +309,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
                         val fileUri = FileProvider.getUriForFile(
                             applicationContext,
-                            com.app.mutliple.videos.compression.BuildConfig.APPLICATION_ID + ".fileprovider",
+                             "com.app.mutliple.videos.compression.fileprovider",
                             file
                         )
 
@@ -773,11 +778,11 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         if(!media.isEditVoice) {
             videoTrimmerView.visibility = View.VISIBLE
             frameLayout2.visibility = View.VISIBLE
-           // videoTrimmerView.trimmingContainer?.visibility=View.VISIBLE
+           trimmingContainer?.visibility=View.VISIBLE
         }else{
             videoTrimmerView.visibility = View.VISIBLE
             frameLayout2.visibility = View.VISIBLE
-           // videoTrimmerView.trimmingContainer?.visibility=View.INVISIBLE
+           trimmingContainer?.visibility=View.INVISIBLE
         }
 
         videoTrimmerView.setMaxDurationInMs(VideoTrimLimit)  // 15 sec set
@@ -1015,8 +1020,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         img_Add.isEnabled = true
         lyt_bottom.isEnabled = true
         list_media.isEnabled = true
-        videoTrimmerView.rangeSeekBarView.isEnabled=true
-        videoTrimmerView.rangeSeekBarView.isClickable=true
+        rangeSeekBarView.isEnabled=true
+        rangeSeekBarView.isClickable=true
 
         tvDoneAddMedia.background = ContextCompat.getDrawable(
             this@MediaPagerTrimmingActivity,

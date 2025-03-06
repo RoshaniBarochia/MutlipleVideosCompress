@@ -26,14 +26,15 @@ abstract class BaseSeekTrimmerView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     // private var mHolderTopView: SeekBar? = null
-    val rangeSeekBarView: RangeSeekBarViewMultiple
-   // private val videoViewContainer: View
-    private val timeInfoContainer: View
+    lateinit var rangeSeekBarView: RangeSeekBarViewMultiple
+    lateinit var playView: View
+
+    // private val videoViewContainer: View
+    lateinit var timeInfoContainer: View
 
     //private val videoView: VideoView
-    private val playView: View
-    private val timeLineView: TimeLineView
-    private val mVideoProgressIndicator: ProgressBarViewMultiple
+    lateinit var timeLineView: TimeLineView
+    lateinit var mVideoProgressIndicator: ProgressBarViewMultiple
     private var src: Uri? = null
     private var dstFile: File? = null
     private var maxDurationInMs: Int = 0
@@ -51,26 +52,29 @@ abstract class BaseSeekTrimmerView @JvmOverloads constructor(
     private var end : Long =0L*/
 
     init {
+        setUp()
+    }
+    private fun setUp(){
         initRootView()
-        rangeSeekBarView = getRangeSeekBarView()
+        rangeSeekBarView = obtainRangeSeekBarView()
 
-        playView = getPlayView()
-        timeInfoContainer = getTimeInfoContainer()
-        timeLineView = getTimeLineView()
-        mVideoProgressIndicator = getProgressBarView()
+        playView = obtainPlayView()
+        timeInfoContainer = obtainTimeInfoContainer()
+        timeLineView = obtainTimeLineView()
+        mVideoProgressIndicator = obtainProgressBarView()
         setUpMargins()
         setUpListeners()
     }
 
     abstract fun initRootView()
 
-    abstract fun getTimeLineView(): TimeLineView
+    abstract fun obtainTimeLineView(): TimeLineView
 
-    abstract fun getTimeInfoContainer(): View
+    abstract fun obtainTimeInfoContainer(): View
 
-    abstract fun getPlayView(): View
+    abstract fun obtainPlayView(): View
 
-    abstract fun getRangeSeekBarView(): RangeSeekBarViewMultiple
+    abstract fun obtainRangeSeekBarView(): RangeSeekBarViewMultiple
 
     abstract fun onRangeUpdated(startTimeInMs: Int, endTimeInMs: Int)
 
@@ -357,7 +361,7 @@ abstract class BaseSeekTrimmerView @JvmOverloads constructor(
             resetSeekBar = true
             return
         }
-        if (getPlayView() != null) {
+        if (obtainPlayView() != null) {
             // use long to avoid overflow
 
             setProgressBarPosition(time)
@@ -608,6 +612,6 @@ abstract class BaseSeekTrimmerView @JvmOverloads constructor(
         notifyProgressUpdate(true)
     }*/
 
-    abstract fun getProgressBarView(): ProgressBarViewMultiple
+    abstract fun obtainProgressBarView(): ProgressBarViewMultiple
 
 }
