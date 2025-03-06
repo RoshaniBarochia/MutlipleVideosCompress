@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- VIDEO TRIMMER-->
+    <dimen name="progress_video_line_height">3dp</dimen>
+    <dimen name="frames_video_height">40dip</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="image_border_curvature">100</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="bottom_sheet_margin_left">64dp</dimen>
+
+</resources>

@@ -6,4 +6,85 @@
     </style>
 
     <style name="Theme.MutlipleVideosCompress" parent="Base.Theme.MutlipleVideosCompress" />
+    <style name="tv_12_black">
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="ButtonStyle_disable_mode">
+        <item name="android:layout_width">@dimen/_100sdp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/btn_round_disable</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:paddingTop">@dimen/_10sdp</item>
+        <item name="android:paddingBottom">@dimen/_10sdp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+    </style>
+    <style name="edi_18_black_bold">
+        <item name="android:textSize">@dimen/_18ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="tv_14_black_bold">
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="btn_14_black">
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="btn_16_black">
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="btn_18_black">
+        <item name="android:textSize">@dimen/_18ssp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/asman</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="myDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/black</item>
+        <item name="colorControlHighlight">@color/black</item>
+    </style>
+    <style name="myDialogThemePopup" parent="@android:style/Theme.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="l">@color/white</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+    </style>
+
+    <style name="DialogMessageAnimation">
+        <item name="android:windowEnterAnimation">@anim/down_from_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_up_current</item>
+    </style>
+
 </resources>

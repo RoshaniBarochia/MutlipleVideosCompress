@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="external_files" path="."/>
+    <external-media-path name="image" path="image/" />
+    <external-media-path name="video" path="video/" />
+    <external-media-path name="audio" path="audio/" />
+    <files-path name="image" path="image/" />
+    <files-path name="video" path="video/" />
+    <files-path name="audio" path="audio/" />
+    <!--<external-path name="external_files" path="image/"/>
+    <external-path name="external_files" path="video/"/>
+    <external-path name="external_files" path="audio/"/>-->
+</paths>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+      <com.google.android.exoplayer2.ui.PlayerView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:background="@color/transparent"
+          android:visibility="gone"
+          app:use_controller="false"
+          android:id="@+id/videoViewAttached"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          />
+        <ImageView
+            android:id="@+id/imgImageThumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:visibility="visible"
+            android:contentDescription="@string/app_name"
+            android:background="@color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+      <com.app.mutliple.videos.compression.zoom_image.ZoomageView
+          android:id="@+id/imgAttachedImage"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:scaleType="fitCenter"
+          android:background="@color/transparent"
+          android:visibility="gone"
+          android:layout_marginBottom="@dimen/_2sdp"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:zoomage_restrictBounds="false"
+          app:zoomage_animateOnReset="true"
+          app:zoomage_autoResetMode="UNDER"
+          app:zoomage_autoCenter="true"
+          app:zoomage_zoomable="true"
+          app:zoomage_translatable="true"
+          app:zoomage_minScale="0.6"
+          app:zoomage_maxScale="8"/>
+
+      <ProgressBar
+          android:id="@+id/ivProgressbarLogin"
+          android:layout_width="@dimen/_25sdp"
+          android:layout_height="@dimen/_25sdp"
+          android:layout_gravity="center"
+          android:layout_marginBottom="@dimen/_5sdp"
+          android:indeterminateDrawable="@drawable/loading_white"
+          android:indeterminateDuration="2000"
+          android:indeterminate="true"
+          android:indeterminateTintMode="src_atop"
+          android:indeterminateTint="@color/white"
+          android:visibility="gone"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent" />
+
+   <ImageView
+       android:id="@+id/playIndicatorView"
+       android:layout_width="50dp"
+       android:layout_height="50dp"
+       android:layout_gravity="center"
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       android:visibility="invisible"
+       android:contentDescription="@string/app_name"
+       app:srcCompat="@mipmap/icon_video_play" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

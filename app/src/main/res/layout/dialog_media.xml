@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_260sdp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/tv_14_black_bold"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Add media"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_divider_line_lite" />
+    <TextView
+        android:id="@+id/tv_capture_photo"
+        style="@style/tv_12_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Capture a photo"
+        android:background="@drawable/ripple_effect_bordered"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:id="@+id/ViewCaptureVideo"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_divider_line_lite" />
+    <TextView
+        android:id="@+id/tv_capture_video"
+        style="@style/tv_12_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ripple_effect_bordered"
+        android:text="Record a video"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_capture_photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:id="@+id/ViewGallery"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_divider_line_lite" />
+    <TextView
+        android:id="@+id/tv_gallery"
+        style="@style/tv_12_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Open phone gallery"
+        android:background="@drawable/ripple_effect_bordered"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_capture_video"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_divider_line_lite" />
+    <TextView
+        android:id="@+id/tvCancel"
+        style="@style/tv_12_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Cancel"
+        android:background="@drawable/ripple_effect_bordered"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_capture_video"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"/>
+</LinearLayout>

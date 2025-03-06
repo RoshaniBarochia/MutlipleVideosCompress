@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MutlipleVideosCompress</string>
+    <string name="app_name">MultipleVideosCompress</string>
+    <string name="process">Process</string>
 </resources>

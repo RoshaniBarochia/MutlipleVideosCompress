@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MutlipleVideosCompress"
 include(":app")
- 
+include(":lightcompressor")
