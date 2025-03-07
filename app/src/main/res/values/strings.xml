@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">MultipleVideosCompress</string>
     <string name="process">Process</string>
+    <string name="image_video"><![CDATA[Image & Video]]></string>
+    <string name="compressed_images_and_videos_list">Compressed Images And Videos List</string>
 </resources>

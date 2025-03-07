@@ -236,9 +236,7 @@ object Utility {
     fun showDialogWithMedia(
         context: AppCompatActivity,
         alertDialogMediaInterface: alertDialogMediaInterface,
-        isCancelable: Boolean,
-        isHideBottomBar: Boolean = false,
-        isUploadAudioMenu: Boolean = false,
+        isCancelable: Boolean
     ): Dialog {
         val alertwithMediaOption = Dialog(context, R.style.myDialogTheme)
         alertwithMediaOption.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -249,22 +247,13 @@ object Utility {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-        val tv_title = alertwithMediaOption.findViewById<TextView>(R.id.tv_title)
         val tv_capture_photo = alertwithMediaOption.findViewById<TextView>(R.id.tv_capture_photo)
         val tv_capture_video = alertwithMediaOption.findViewById<TextView>(R.id.tv_capture_video)
         val tv_gallery = alertwithMediaOption.findViewById<TextView>(R.id.tv_gallery)
         val tvCancel = alertwithMediaOption.findViewById<TextView>(R.id.tvCancel)
 
-        val ViewCaptureVideo = alertwithMediaOption.findViewById<View>(R.id.ViewCaptureVideo)
 
-        if (isUploadAudioMenu) {
-            tv_title.text = "Upload audio"
-            tv_capture_video.text = "Upload audio from device"
-            tv_gallery.text = "Extract audio from video"
 
-            tv_capture_photo.visibility = View.GONE
-            ViewCaptureVideo.visibility = View.GONE
-        }
 
         tv_capture_photo.setOnClickListener {
             alertDialogMediaInterface.onCapturePhotoClick()

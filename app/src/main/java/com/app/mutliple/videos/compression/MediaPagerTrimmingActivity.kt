@@ -31,8 +31,8 @@ import com.app.mutliple.videos.compression.model.AppMedia
 import com.app.mutliple.videos.compression.trimmingvideo.SeekTrimmerView
 import com.app.mutliple.videos.compression.trimmingvideo.VideoTrimmingListenerMultiple
 import com.app.mutliple.videos.compression.utils.Constants
-import com.app.mutliple.videos.compression.utils.Constants.VideoTrimLimit
-import com.app.mutliple.videos.compression.utils.Constants.media_selection_limit
+import com.app.mutliple.videos.compression.utils.Constants.VideoTrimmingLimit
+import com.app.mutliple.videos.compression.utils.Constants.mediaLimits
 import com.app.mutliple.videos.compression.utils.DeleteVoiceNoteInterface
 import com.app.mutliple.videos.compression.utils.ImageUtility
 import com.app.mutliple.videos.compression.utils.Utility
@@ -58,53 +58,46 @@ import java.lang.reflect.Type
 import java.net.URLConnection
 
 private const val TAG = "MediaPagerTrimmingActivity"
-class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface, MediaThumbAdapter.thumdClick, Player.Listener, VideoTrimmingListenerMultiple {
+class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface, MediaThumbAdapter.ItemMediaClick, Player.Listener, VideoTrimmingListenerMultiple {
     private var mMediaShowPagerAdapter: MediaShowTrimPagerAdapter? = null
     private var mMediaThumbAdapter: MediaThumbAdapter? = null
-    var mArrayUri: ArrayList<AppMedia> = ArrayList()
-    var linearLayoutManager: LinearLayoutManager? = null
+    var listMediaVideoImage: ArrayList<AppMedia> = ArrayList()
+    private var linearLayoutManager: LinearLayoutManager? = null
     var modeSnappedPosition = -1
     var oldSnappedPosition = -1
-    var callFrom = "local"
+    private var callFrom = "local"
     var isApiCall=false
-    var isSingle=false
-    var voice_note_media = ""
-    var pagerRegister: ViewPager2.OnPageChangeCallback? = null
-    var deleteVoiceNoteInterface: DeleteVoiceNoteInterface? = null
-    //    lateinit var voiceNoteListCacheAdapter: File
-    var currentVideoMedia: AppMedia? = null
-    var voiceNoteListCacheAdapter: File? = null
+    private var isSingle=false
+    //var mediaImageVideoNote = ""
+    private var pagerRegister: ViewPager2.OnPageChangeCallback? = null
+    private var deleteVoiceNoteInterface: DeleteVoiceNoteInterface? = null
+    private var currentVideoMedia: AppMedia? = null
+    private var voiceNoteListCacheAdapter: File? = null
 
 
     companion object {
         private lateinit var outputDirectory: File
-        var MIME_TYPES_IMAGE_VIDEO = arrayOf(
-            "video/*",
-            "image/*"
-        )
     }
 
-    var isFirstTime = true
+    private var isFirstTime = true
 
-    var makeUri: Uri? = null
+    private var makeUri: Uri? = null
     lateinit var file: File
     private lateinit var am: AudioManager
-    var isVideoComplete = false
-    var isVideoPlayedStatus = Constants.NONE
-    var videoPlayer: ExoPlayer? = null
-    var isPlaying = false
-    var mediaList: ArrayList<AppMedia> = ArrayList()
-    private lateinit var img_Add: ImageView
-    private lateinit var list_media: RecyclerView
+    private var isVideoPlayedStatus = Constants.NONE
+    private var videoPlayer: ExoPlayer? = null
+    private var mediaList: ArrayList<AppMedia> = ArrayList()
+    //private lateinit var imgAdd: ImageView
+    private lateinit var listMedia: RecyclerView
     private lateinit var tvDoneAddMedia: TextView
-    private lateinit var lyt_bottom: LinearLayout
+    private lateinit var lytBottom: LinearLayout
     private lateinit var videoTrimmerView: SeekTrimmerView
     private lateinit var rangeSeekBarView: RangeSeekBarViewMultiple
     private lateinit var trimmingContainer: FrameLayout
     private lateinit var frameLayout2: FrameLayout
     private lateinit var ivProgressbarLogin: ProgressBar
     private lateinit var imgAttachedImage: ImageView
-    private lateinit var pager_media: ViewPager2
+    private lateinit var viewPager2: ViewPager2
     private lateinit var videoView: PlayerView
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,8 +106,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         voiceNoteListCacheAdapter = getDirectoryVoiceNoteListCache().absoluteFile
 
         am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        img_Add = findViewById(R.id.img_Add)
-        list_media = findViewById(R.id.list_media)
+        //imgAdd = findViewById(R.id.img_Add)
+        listMedia = findViewById(R.id.list_media)
         tvDoneAddMedia = findViewById(R.id.tvDoneAddMedia)
         videoTrimmerView = findViewById(R.id.videoTrimmerView)
         rangeSeekBarView=videoTrimmerView.findViewById(R.id.rangeSeekBarViewMultiple)
@@ -122,65 +115,55 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         frameLayout2 = findViewById(R.id.frameLayout2)
         ivProgressbarLogin = findViewById(R.id.ivProgressbarLogin)
         imgAttachedImage = findViewById(R.id.imgAttachedImage)
-        lyt_bottom = findViewById(R.id.lyt_bottom)
-        pager_media = findViewById(R.id.pager_media)
+        lytBottom = findViewById(R.id.lyt_bottom)
+        viewPager2 = findViewById(R.id.pager_media)
         videoView = findViewById(R.id.videoView)
         outputDirectory = getOutputDirectory()
         videoTrimmerView.setOnK4LVideoListener(this)
 //        voiceNoteListCacheAdapter = getDirectoryVoiceNoteListCache()
         if (intent.hasExtra("media_list")) {
             val type: Type = object : TypeToken<List<AppMedia>>() {}.type
-            mArrayUri=(Gson().fromJson(intent.getStringExtra("media_list"), type))
+            listMediaVideoImage=(Gson().fromJson(intent.getStringExtra("media_list"), type))
         }
         if (intent.hasExtra("extra_list")) {
             val type: Type = object : TypeToken<List<AppMedia>>() {}.type
-            mArrayUri.addAll(Gson().fromJson(intent.getStringExtra("extra_list"), type))
+            listMediaVideoImage.addAll(Gson().fromJson(intent.getStringExtra("extra_list"), type))
         }
 
-        if (mArrayUri.isNotEmpty()) {
+        if (listMediaVideoImage.isNotEmpty()) {
             setMediaList()
         }
 
-        callFrom = if (intent.hasExtra("call_from")) {
-            intent.getStringExtra("call_from").toString()
-        } else {
-            "local"
-        }
+
         isSingle=if (intent.hasExtra("isSingle")) {
              intent.getBooleanExtra("isSingle",false)
         }else{
             false
         }
-        media_selection_limit = if(isSingle){
+        mediaLimits = if(isSingle){
             1
         }else
-            Constants.multipleMediaLimit
+            Constants.MULTIPLE_MEDIA_LIMIT
 
-        if (callFrom.equals("server", ignoreCase = true)) {
-            img_Add.visibility = View.GONE
-            tvDoneAddMedia.visibility = View.GONE
-        } else {
-            img_Add.visibility = View.VISIBLE
+            //imgAdd.visibility = View.VISIBLE
             tvDoneAddMedia.visibility = View.VISIBLE
-        }
+
 
         setMediaPager()
-        pager_media.isUserInputEnabled = false
+        viewPager2.isUserInputEnabled = false
         mMediaThumbAdapter = MediaThumbAdapter(
-            mArrayUri,
-            callFrom,
+            listMediaVideoImage,
             this@MediaPagerTrimmingActivity,
-            voiceNoteListCacheAdapter!!,
-            pager_media
+            viewPager2
         )
         linearLayoutManager = LinearLayoutManager(
             this@MediaPagerTrimmingActivity,
             LinearLayoutManager.HORIZONTAL,
             false
         )
-        list_media.layoutManager = linearLayoutManager
-        list_media.adapter = mMediaThumbAdapter
-        list_media.setHasFixedSize(true)
+        listMedia.layoutManager = linearLayoutManager
+        listMedia.adapter = mMediaThumbAdapter
+        listMedia.setHasFixedSize(true)
         pagerRegister = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
 
@@ -198,7 +181,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                     //videoTrimmerView.pauseVideo()
                     oldSnappedPosition = modeSnappedPosition
                     modeSnappedPosition = position
-                    list_media.smoothScrollToPosition(position)
+                    listMedia.smoothScrollToPosition(position)
                     Handler(Looper.getMainLooper()).postDelayed({
                         setMediaSelected()
                         setPagerData()
@@ -206,19 +189,19 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                 }
             }
         }
-        pager_media.registerOnPageChangeCallback(pagerRegister!!)
-        pager_media.currentItem = when {
-            mArrayUri.size > -1 && intent.hasExtra("position") -> {
+        viewPager2.registerOnPageChangeCallback(pagerRegister!!)
+        viewPager2.currentItem = when {
+            listMediaVideoImage.size > -1 && intent.hasExtra("position") -> {
                 intent.getIntExtra("position", -1)
             }
-            mArrayUri.size > 0 -> {
+            listMediaVideoImage.size > 0 -> {
                 0
             }
             else -> {
                 -1
             }
         }
-        pager_media.getChildAt(0).setOnTouchListener(object : View.OnTouchListener {
+        viewPager2.getChildAt(0).setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 when (event?.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -235,7 +218,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             intent.hasExtra("position") -> {
                 intent.getIntExtra("position", -1)
             }
-            mArrayUri.size > 0 -> {
+            listMediaVideoImage.size > 0 -> {
                 0
             }
             else -> {
@@ -253,10 +236,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             isApiCall=true
             stopExoPlayer()
             tvDoneAddMedia.isEnabled = false
-            img_Add.isEnabled = false
+           // imgAdd.isEnabled = false
 
-            lyt_bottom.isEnabled = false
-            list_media.isEnabled = false
+            lytBottom.isEnabled = false
+            listMedia.isEnabled = false
             rangeSeekBarView.isEnabled=false
             rangeSeekBarView.isClickable=false
             ivProgressbarLogin.visibility = View.VISIBLE
@@ -275,90 +258,89 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             else
                 setBackData()
         }
-        img_Add.setOnClickListener {
-            if (mArrayUri.size < Constants.media_selection_limit) {
-                Utility.showDialogWithMedia(this@MediaPagerTrimmingActivity, object :
-                    alertDialogMediaInterface {
-                    override fun onCapturePhotoClick() {
-
-                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                        val file = File(
-                            outputDirectory,
-                            System.currentTimeMillis().toString() + ".jpg"
-                        )
-                        voice_note_media = file.absolutePath
-
-                        val fileUri = FileProvider.getUriForFile(
-                            applicationContext,
-                            "com.app.mutliple.videos.compression.fileprovider",
-                            file
-                        )
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
-                        startResultForCamera.launch(cameraIntent)
-                    }
-
-                    override fun onCaptureVideoClick() {
-                        val cameraIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-
-                        val file = File(
-                            outputDirectory,
-                            System.currentTimeMillis().toString() + Constants.VIDEO_FORMAT
-                        )
-                        voice_note_media = file.absolutePath
-
-                        val fileUri = FileProvider.getUriForFile(
-                            applicationContext,
-                             "com.app.mutliple.videos.compression.fileprovider",
-                            file
-                        )
-
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
-                        startResultForCamera.launch(cameraIntent)
-                    }
-
-                    override fun onGalleryClick() {
-                        val pickIntent = Intent(Intent.ACTION_GET_CONTENT)
-                        pickIntent.addCategory(Intent.CATEGORY_OPENABLE)
-                        pickIntent.type = "*/*"
-                        pickIntent.putExtra(
-                            Intent.EXTRA_MIME_TYPES,
-                            Constants.MIME_TYPES_IMAGE_VIDEO
-                        )
-                        if(!isSingle){
-                            pickIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        }
-                        startResultForGallery.launch(pickIntent)
-                    }
-
-                }, isCancelable = true, isHideBottomBar = true)
-            } else {
-                Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.media_selection_limit}  media items")
-            }
-            //hideSystemUI(isHide = true)
-        }
+//        imgAdd.setOnClickListener {
+//            if (listMediaVideoImage.size < Constants.mediaLimits) {
+//                Utility.showDialogWithMedia(this@MediaPagerTrimmingActivity, object :
+//                    alertDialogMediaInterface {
+//                    override fun onCapturePhotoClick() {
+//
+//                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//
+//                        val file = File(
+//                            outputDirectory,
+//                            System.currentTimeMillis().toString() + ".jpg"
+//                        )
+//                        mediaImageVideoNote = file.absolutePath
+//
+//                        val fileUri = FileProvider.getUriForFile(
+//                            applicationContext,
+//                            BuildConfig.APPLICATION_ID+"fileprovider",
+//                            file
+//                        )
+//                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+//                        startResultForCamera.launch(cameraIntent)
+//                    }
+//
+//                    override fun onCaptureVideoClick() {
+//                        val cameraIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+//
+//                        val file = File(
+//                            outputDirectory,
+//                            System.currentTimeMillis().toString() + Constants.VIDEO_FORMAT
+//                        )
+//                        mediaImageVideoNote = file.absolutePath
+//
+//                        val fileUri = FileProvider.getUriForFile(
+//                            applicationContext,
+//                            BuildConfig.APPLICATION_ID+".fileprovider",
+//                            file
+//                        )
+//
+//                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+//                        startResultForCamera.launch(cameraIntent)
+//                    }
+//
+//                    override fun onGalleryClick() {
+//                        val pickIntent = Intent(Intent.ACTION_GET_CONTENT)
+//                        pickIntent.addCategory(Intent.CATEGORY_OPENABLE)
+//                        pickIntent.type = "*/*"
+//                        pickIntent.putExtra(
+//                            Intent.EXTRA_MIME_TYPES,
+//                            Constants.MIME_TYPES_IMAGE_VIDEO
+//                        )
+//                        if(!isSingle){
+//                            pickIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+//                        }
+//                        startResultForGallery.launch(pickIntent)
+//                    }
+//
+//                }, isCancelable = true)
+//            } else {
+//                Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${mediaLimits}  media items")
+//            }
+//        }
     }
     
    
 
-    private val startResultForCamera =
+   /* private val startResultForCamera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK && voice_note_media.isNotEmpty()) {
+            if (result.resultCode == Activity.RESULT_OK && mediaImageVideoNote.isNotEmpty()) {
                 // image and video from camera
-                if (mArrayUri.size < Constants.media_selection_limit) {
-                    val temp = mArrayUri.size
-                    if (isImageFile(voice_note_media)) {
-                        val imagePath = voice_note_media
+                if (listMediaVideoImage.size < Constants.mediaLimits) {
+                    val temp = listMediaVideoImage.size
+                    if (isImageFile(mediaImageVideoNote)) {
+                        val imagePath = mediaImageVideoNote
                         val compressImageFile =
                             ImageUtility.compressImage(
                                 this@MediaPagerTrimmingActivity, outputDirectory, imagePath
                             )
-                        voice_note_media = compressImageFile.absolutePath
-                        mArrayUri.add(
+                        mediaImageVideoNote = compressImageFile.absolutePath
+                        listMediaVideoImage.add(
                             AppMedia(
                                 -1,
-                                voice_note_media,
-                                voice_note_media,
+                                mediaImageVideoNote,
+                                mediaImageVideoNote,
                                 0L,
                                  0L,
                                 0L
@@ -366,14 +348,14 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                         )
                     } else {
                         val duration = Utility.getDuration(
-                            File(voice_note_media),
+                            File(mediaImageVideoNote),
                             this@MediaPagerTrimmingActivity
                         )
-                        mArrayUri.add(
+                        listMediaVideoImage.add(
                             AppMedia(
                                 -1,
-                                voice_note_media,
-                                voice_note_media,
+                                mediaImageVideoNote,
+                                mediaImageVideoNote,
                                 0L,
                                 duration,
                                 duration,
@@ -382,17 +364,17 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                         )
                     }
                     setMediaPager()
-                    pager_media.registerOnPageChangeCallback(pagerRegister!!)
+                    viewPager2.registerOnPageChangeCallback(pagerRegister!!)
                     if (temp != 0) {
-                        mMediaThumbAdapter?.notifyItemRangeChanged(temp - 1, mArrayUri.size)
+                        mMediaThumbAdapter?.notifyItemRangeChanged(temp - 1, listMediaVideoImage.size)
                     } else {
                         mMediaThumbAdapter?.notifyDataSetChanged()
                     }
-                    if (mArrayUri.size > 0) {
+                    if (listMediaVideoImage.size > 0) {
                         if (temp == 0) {
                             modeSnappedPosition = 0
                         }
-                        pager_media.currentItem = modeSnappedPosition
+                        viewPager2.currentItem = modeSnappedPosition
                         setMediaSelected()
                         setMediaList()
                         setPagerData()
@@ -400,10 +382,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
                     }
                 } else {
-                    Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.media_selection_limit}  media items")
+                    Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.mediaLimits}  media items")
                 }
             } else {
-                voice_note_media = ""
+                mediaImageVideoNote = ""
             }
         }
 
@@ -414,14 +396,14 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                 result.data != null
             ) {
                 // image and video from gallery
-                if (mArrayUri.size < Constants.media_selection_limit) {
-                    val temp = mArrayUri.size
+                if (listMediaVideoImage.size < Constants.mediaLimits) {
+                    val temp = listMediaVideoImage.size
                     val data = result.data
                     if (data?.clipData != null) {
                         val coutData: ClipData? = data.clipData
                         for (i in 0 until coutData?.itemCount!!) {
-                            if (mArrayUri.size >= Constants.media_selection_limit) {
-                                Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.media_selection_limit}  media items")
+                            if (listMediaVideoImage.size >= Constants.mediaLimits) {
+                                Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.mediaLimits}  media items")
                                 break
                             }
                             val imageUrl: Uri = data.clipData!!.getItemAt(i).uri
@@ -433,7 +415,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                                         outputDirectory,
                                         path
                                     )
-                                mArrayUri.add(
+                                listMediaVideoImage.add(
                                     AppMedia(
                                         -1,
                                         compressImageFile.absolutePath,
@@ -446,7 +428,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                             } else {
                                 val duration =
                                     Utility.getDuration(File(path), this@MediaPagerTrimmingActivity)
-                                mArrayUri.add(
+                                listMediaVideoImage.add(
                                     AppMedia(
                                         -1,
                                         path,
@@ -475,7 +457,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                                     outputDirectory,
                                     imagePath
                                 )
-                            mArrayUri.add(
+                            listMediaVideoImage.add(
                                 AppMedia(
                                     -1,
                                     compressImageFile.absolutePath,
@@ -490,7 +472,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                                 com.app.mutliple.videos.compression.utils.FileUtils.getRealPath(this, Uri.parse(data?.data?.toString()))
                             val duration =
                                 Utility.getDuration(File(path), this@MediaPagerTrimmingActivity)
-                            mArrayUri.add(
+                            listMediaVideoImage.add(
                                 AppMedia(
                                     -1,
                                     path,
@@ -505,17 +487,17 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                     }
 
                     setMediaPager()
-                    pager_media.registerOnPageChangeCallback(pagerRegister!!)
+                    viewPager2.registerOnPageChangeCallback(pagerRegister!!)
                     if (temp != 0) {
-                        mMediaThumbAdapter?.notifyItemRangeChanged(temp - 1, mArrayUri.size)
+                        mMediaThumbAdapter?.notifyItemRangeChanged(temp - 1, listMediaVideoImage.size)
                     } else {
                         mMediaThumbAdapter?.notifyDataSetChanged()
                     }
-                    if (mArrayUri.size > 0) {
+                    if (listMediaVideoImage.size > 0) {
                         if (temp == 0) {
                             modeSnappedPosition = 0
                         }
-                        pager_media.currentItem = modeSnappedPosition
+                        viewPager2.currentItem = modeSnappedPosition
                         setMediaSelected()
                         setMediaList()
                         setPagerData()
@@ -523,10 +505,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
                     }
                 } else {
-                    Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.media_selection_limit}  media items")
+                    Utility.msgDialog(this@MediaPagerTrimmingActivity, "Can't share more than ${Constants.mediaLimits}  media items")
                 }
             } else {
-                voice_note_media = ""
+                mediaImageVideoNote = ""
             }
         }
 
@@ -541,7 +523,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             mimeType != null && mimeType.startsWith("image")
         } else
             false
-    }
+    }*/
 
 
     @SuppressLint("NewApi")
@@ -552,35 +534,35 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     }
 
     fun setPagerData() {
-        if (getMimeType(mArrayUri[pager_media.currentItem].absolute_path)?.isNotEmpty() == true && getMimeType(
-                mArrayUri[pager_media.currentItem].absolute_path
+        if (getMimeType(listMediaVideoImage[viewPager2.currentItem].absolute_path)?.isNotEmpty() == true && getMimeType(
+                listMediaVideoImage[viewPager2.currentItem].absolute_path
             )?.contains("video") == true
         ) {
             imgAttachedImage.visibility = View.GONE
             for (i in mediaList) {
-                if (i.absolute_path == mArrayUri[pager_media.currentItem].absolute_path) {
+                if (i.absolute_path == listMediaVideoImage[viewPager2.currentItem].absolute_path) {
                     currentVideoMedia = i
                     setVideoTrimmerView(i)
                 }
             }
 
         } else
-            setCurrentPageDataForImage(mArrayUri[pager_media.currentItem].absolute_path)
+            setCurrentPageDataForImage(listMediaVideoImage[viewPager2.currentItem].absolute_path)
     }
 
     override fun onDeleteClick() {
-        if (mArrayUri.size > 0) {
-            val temp = pager_media.currentItem
-            if (mArrayUri.size > 1 && pager_media.currentItem == (mArrayUri.size - 1)) {
+        if (listMediaVideoImage.size > 0) {
+            val temp = viewPager2.currentItem
+            if (listMediaVideoImage.size > 1 && viewPager2.currentItem == (listMediaVideoImage.size - 1)) {
                 modeSnappedPosition -= 1
             }
-            mArrayUri.removeAt(temp)
+            listMediaVideoImage.removeAt(temp)
             mediaList.clear()
             setMediaPager()
-            pager_media.registerOnPageChangeCallback(pagerRegister!!)
+            viewPager2.registerOnPageChangeCallback(pagerRegister!!)
             mMediaThumbAdapter?.notifyItemRemoved(temp)
-            if (mArrayUri.size > 0) {
-                pager_media.currentItem = modeSnappedPosition
+            if (listMediaVideoImage.size > 0) {
+                viewPager2.currentItem = modeSnappedPosition
                 setMediaSelected()
                 setMediaList()
                 setPagerData()
@@ -595,22 +577,22 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
     fun setMediaList() {
         mediaList.clear()
-        if (mArrayUri.isNotEmpty()) {
-            for (i in 0 until mArrayUri.size) {
-                if (getMimeType(mArrayUri[i].absolute_path)?.isNotEmpty() == true && getMimeType(
-                        mArrayUri[i].absolute_path
+        if (listMediaVideoImage.isNotEmpty()) {
+            for (i in 0 until listMediaVideoImage.size) {
+                if (getMimeType(listMediaVideoImage[i].absolute_path)?.isNotEmpty() == true && getMimeType(
+                        listMediaVideoImage[i].absolute_path
                     )?.contains("video") == true
                 ) {
                     mediaList.add(
                         AppMedia(
                             i,
-                            mArrayUri[i].absolute_path,
-                            mArrayUri[i].absolute_path,
-                            mArrayUri[i].start,
-                            mArrayUri[i].end,
-                            mArrayUri[i].duration,
-                            isEditVoice = mArrayUri[i].isEditVoice,
-                            pathUrl = mArrayUri[i].pathUrl,
+                            listMediaVideoImage[i].absolute_path,
+                            listMediaVideoImage[i].absolute_path,
+                            listMediaVideoImage[i].start,
+                            listMediaVideoImage[i].end,
+                            listMediaVideoImage[i].duration,
+                            isEditVoice = listMediaVideoImage[i].isEditVoice,
+                            pathUrl = listMediaVideoImage[i].pathUrl,
                         )
                     )
                 }
@@ -621,25 +603,22 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     private fun setMediaPager() {
         mMediaShowPagerAdapter =
             MediaShowTrimPagerAdapter(
-                mArrayUri,
-                this@MediaPagerTrimmingActivity,
-                callFrom,
-                voiceNoteListCacheAdapter!!
+                listMediaVideoImage
             )
-        pager_media.adapter = mMediaShowPagerAdapter
+        viewPager2.adapter = mMediaShowPagerAdapter
     }
 
     private fun setMediaSelected() {
 
         stopExoPlayer()
-        if (mArrayUri.size > 0 && mMediaThumbAdapter != null) {
+        if (listMediaVideoImage.size > 0 && mMediaThumbAdapter != null) {
 
             if (oldSnappedPosition != -1) {
                 val updateOldView: View? =
-                    if (list_media.findViewHolderForAdapterPosition(oldSnappedPosition) != null
-                        && list_media.findViewHolderForAdapterPosition(oldSnappedPosition)?.itemView != null
+                    if (listMedia.findViewHolderForAdapterPosition(oldSnappedPosition) != null
+                        && listMedia.findViewHolderForAdapterPosition(oldSnappedPosition)?.itemView != null
                     ) {
-                        list_media.findViewHolderForAdapterPosition(oldSnappedPosition)!!.itemView
+                        listMedia.findViewHolderForAdapterPosition(oldSnappedPosition)!!.itemView
                     } else null
 
                 if (updateOldView != null) {
@@ -650,10 +629,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             if (modeSnappedPosition != -1) {
 
                 val updateNewView: View? =
-                    if (list_media.findViewHolderForAdapterPosition(modeSnappedPosition) != null
-                        && list_media.findViewHolderForAdapterPosition(modeSnappedPosition)?.itemView != null
+                    if (listMedia.findViewHolderForAdapterPosition(modeSnappedPosition) != null
+                        && listMedia.findViewHolderForAdapterPosition(modeSnappedPosition)?.itemView != null
                     ) {
-                        list_media.findViewHolderForAdapterPosition(modeSnappedPosition)!!.itemView
+                        listMedia.findViewHolderForAdapterPosition(modeSnappedPosition)!!.itemView
                     } else null
                 if (updateNewView != null) {
 
@@ -662,8 +641,6 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                     imgBorderNew.visibility = View.VISIBLE
                 }
             }
-        } else {
-
         }
     }
 
@@ -672,13 +649,13 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
         val intent = Intent()
         intent.putExtra("isDelete", true)
-        intent.putExtra("media_list", Gson().toJson(mArrayUri))
+        intent.putExtra("media_list", Gson().toJson(listMediaVideoImage))
         setResult(RESULT_OK, intent)
         finish()
     }
 
     private fun stopPlayer() {
-        pager_media.unregisterOnPageChangeCallback(pagerRegister!!)
+        viewPager2.unregisterOnPageChangeCallback(pagerRegister!!)
         videoTrimmerView.pauseVideo()
     }
 
@@ -696,7 +673,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     override fun onItemClick(position: Int) {
         if(!isApiCall) {
 
-            pager_media.currentItem = position
+            viewPager2.currentItem = position
         }
     }
 
@@ -778,14 +755,14 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         if(!media.isEditVoice) {
             videoTrimmerView.visibility = View.VISIBLE
             frameLayout2.visibility = View.VISIBLE
-           trimmingContainer?.visibility=View.VISIBLE
+           trimmingContainer.visibility=View.VISIBLE
         }else{
             videoTrimmerView.visibility = View.VISIBLE
             frameLayout2.visibility = View.VISIBLE
-           trimmingContainer?.visibility=View.INVISIBLE
+           trimmingContainer.visibility=View.INVISIBLE
         }
 
-        videoTrimmerView.setMaxDurationInMs(VideoTrimLimit)  // 15 sec set
+        videoTrimmerView.setMaxDurationInMs(VideoTrimmingLimit)  // 15 sec set
 
         val trimmedVideoFile = File(outputDirectory, "remove_video_trimming" + System.currentTimeMillis() + Constants.VIDEO_FORMAT)
 
@@ -822,10 +799,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                 }
             }
 
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                super.onPlaybackStateChanged(playbackState)
                 when (playbackState) {
                     Player.STATE_ENDED -> {
-                        // playView.setVisibility(VISIBLE)
                         videoTrimmerView.onVideoCompleted()
                     }
                     Player.STATE_READY -> {
@@ -837,12 +814,13 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                 }
 
             }
+
         })
 
         videoPlayer?.let {
-            if(media.duration >= VideoTrimLimit  && media.start == 0L) {
+            if(media.duration >= VideoTrimmingLimit  && media.start == 0L) {
                 media.start=0L
-                media.end= VideoTrimLimit.toLong()
+                media.end= VideoTrimmingLimit.toLong()
             }
             videoTrimmerView.setVideoURI(
                 makeUri!!, media.start, media.end, it
@@ -901,16 +879,16 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
 
             // ivProgressbarLogin.visibility = View.GONE
             mediaList.removeAt(mediaList.size - 1)
-            for (i in 0 until mArrayUri.size) {
-                if (uri?.path == mArrayUri[i].absolute_path) {
+            for (i in 0 until listMediaVideoImage.size) {
+                if (uri?.path == listMediaVideoImage[i].absolute_path) {
                     val durationLast = Utility.getDuration(
-                        File(mArrayUri[i].absolute_path),
+                        File(listMediaVideoImage[i].absolute_path),
                         this@MediaPagerTrimmingActivity
                     )
 
-                    mArrayUri[i].absolute_path = dest
-                    mArrayUri[i].start = 0L
-                    mArrayUri[i].end = durationLast
+                    listMediaVideoImage[i].absolute_path = dest
+                    listMediaVideoImage[i].start = 0L
+                    listMediaVideoImage[i].end = durationLast
 
                 }
             }
@@ -928,19 +906,19 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
         ivProgressbarLogin.visibility = View.VISIBLE
         val uris = mutableListOf<String>()
         var count = 0
-        for (i in 0 until mArrayUri.size) {
+        for (i in 0 until listMediaVideoImage.size) {
             // Get length of file in bytes
-            val length =File(mArrayUri[i].absolute_path).length()
+            val length =File(listMediaVideoImage[i].absolute_path).length()
             // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
             val fileSizeInKB = length / 1024
             //  Convert the KB to MegaBytes (1 MB = 1024 KBytes)
             val fileSizeInMB = fileSizeInKB / 1024;
 
-            if ( fileSizeInMB > 3 && getMimeType(mArrayUri[i].absolute_path)?.isNotEmpty() == true && getMimeType(
-                    mArrayUri[i].absolute_path
-                )?.contains("video") == true && !mArrayUri[i].isComPressed
+            if ( fileSizeInMB > 3 && getMimeType(listMediaVideoImage[i].absolute_path)?.isNotEmpty() == true && getMimeType(
+                    listMediaVideoImage[i].absolute_path
+                )?.contains("video") == true && !listMediaVideoImage[i].isComPressed
             ) {
-                uris.add(mArrayUri[i].absolute_path)
+                uris.add(listMediaVideoImage[i].absolute_path)
             }
         }
         if (uris.size == 0) {
@@ -968,10 +946,10 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                         override fun onSuccess(index: Int, size: Long, path: String?) {
 
                             if (path != null) {
-                                for (i in 0 until mArrayUri.size) {
-                                    if (uris[index] == mArrayUri[i].absolute_path) {
-                                        mArrayUri[i].absolute_path = path.toString()
-                                        mArrayUri[i].isComPressed = true
+                                for (i in 0 until listMediaVideoImage.size) {
+                                    if (uris[index] == listMediaVideoImage[i].absolute_path) {
+                                        listMediaVideoImage[i].absolute_path = path.toString()
+                                        listMediaVideoImage[i].isComPressed = true
                                         count++
 
                                         break
@@ -985,12 +963,12 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
                         }
 
                         override fun onFailure(index: Int, failureMessage: String) {
-                            for (i in 0 until mArrayUri.size) {
-                                if (uris[index] == mArrayUri[i].absolute_path) {
+                            for (i in 0 until listMediaVideoImage.size) {
+                                if (uris[index] == listMediaVideoImage[i].absolute_path) {
                                     //mArrayUri[i].isComPressed = true
                                     Toast.makeText(
                                         this@MediaPagerTrimmingActivity,
-                                        "${mArrayUri[i].original_path} video has some problem, Please Try again.",
+                                        "${listMediaVideoImage[i].original_path} video has some problem, Please Try again.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }
@@ -1017,9 +995,9 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     fun buttonDataEnable(){
         isApiCall=false
         tvDoneAddMedia.isEnabled = true
-        img_Add.isEnabled = true
-        lyt_bottom.isEnabled = true
-        list_media.isEnabled = true
+       // imgAdd.isEnabled = true
+        lytBottom.isEnabled = true
+        listMedia.isEnabled = true
         rangeSeekBarView.isEnabled=true
         rangeSeekBarView.isClickable=true
 
@@ -1037,8 +1015,8 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     override fun changeThumbPosition(start: Long, end: Long) {
         currentVideoMedia?.start = start
         currentVideoMedia?.end = end
-        mArrayUri[pager_media.currentItem].start = start
-        mArrayUri[pager_media.currentItem].end = end
+        listMediaVideoImage[viewPager2.currentItem].start = start
+        listMediaVideoImage[viewPager2.currentItem].end = end
 
     }
 
@@ -1049,12 +1027,12 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
             "remove_video_trimming${mediaList.size - 1}_${System.currentTimeMillis()}${Constants.VIDEO_FORMAT}"
         )
         if (i.start == 0L && i.end == i.duration) {
-            if (i.duration >= VideoTrimLimit) {
+            if (i.duration >= VideoTrimmingLimit) {
                 videoTrimmerView.callTrimmingView(
                     File(i.absolute_path),
                     fileDest,
                     i.start.toInt(),
-                    VideoTrimLimit,
+                    VideoTrimmingLimit,
                     i.duration
                 )
             } else {
@@ -1077,7 +1055,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     /* get output file path*/
     fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, Constants.app_hided_folder).absoluteFile.apply { mkdirs() }
+            File(it, Constants.APP_HIDDEN_FOLDER).absoluteFile.apply { mkdirs() }
         }
         return if (mediaDir != null && mediaDir.exists()) {
             mediaDir.absoluteFile
@@ -1086,7 +1064,7 @@ class MediaPagerTrimmingActivity : AppCompatActivity(),DeleteVoiceNoteInterface,
     fun getDirectoryVoiceNoteListCache(): File {
 
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            val file = File(Constants.voiceNoteListCache).absoluteFile
+            val file = File(Constants.IMAGE_VIDEO_CACHE).absoluteFile
             file.apply { mkdirs() }
         }
         return if (mediaDir != null && mediaDir.exists()) {
