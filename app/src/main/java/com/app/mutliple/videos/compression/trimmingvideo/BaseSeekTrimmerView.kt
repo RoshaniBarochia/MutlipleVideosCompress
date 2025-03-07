@@ -302,11 +302,11 @@ abstract class BaseSeekTrimmerView @JvmOverloads constructor(
 
     private fun onSeekThumbs(index: Int, value: Float) {
         when (index) {
-            RangeSeekBarView.ThumbType.LEFT.index -> {
+            RangeSeekBarViewMultiple.ThumbType.LEFT.index -> {
                 startPosition = (duration * value / 100L).toInt()
                 videoPlayer?.seekTo(startPosition.toLong())
             }
-            RangeSeekBarView.ThumbType.RIGHT.index -> {
+            RangeSeekBarViewMultiple.ThumbType.RIGHT.index -> {
                 endPosition = (duration * value / 100L).toInt()
             }
         }
