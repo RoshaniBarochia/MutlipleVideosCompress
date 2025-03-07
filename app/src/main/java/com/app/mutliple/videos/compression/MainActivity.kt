@@ -358,7 +358,6 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 )
                             ) {
-                                Log.e("TAG_ADD_MEDIA", "GALLERY_REQUEST Image")
                                 if (!Utility.isEmpty(data?.data?.toString())) {
                                     val imagePath =
                                         FileUtils.getRealPath(
@@ -384,10 +383,7 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                             } else {
-                                Log.e(
-                                    "TAG_ADD_MEDIA",
-                                    "GALLERY_REQUEST Video"
-                                )
+
                                 val path =
                                     FileUtils.getRealPath(
                                         this,
@@ -430,61 +426,32 @@ class MainActivity : AppCompatActivity() {
 
     private var startResultForMediaShow =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            Log.d(
-                "startResultForMediaShow",
-                "addMediaEnable -result.resultCode=${result.resultCode} - tempArrayUri.size=${tempListMedia.size}"
-            )
             if (result.resultCode == Activity.RESULT_OK &&
                 result.data != null
             ) {
                 try {
 
                     if (result.data?.hasExtra("isDelete") == true) {
-                        Log.d(
-                            "startResultForMediaShow",
-                            "result.data?.hasExtra(isDelete) == true"
-                        )
                         if (result.data?.getBooleanExtra("isDelete", false) == true) {
-                            Log.d(
-                                "startResultForMediaShow",
-                                "tempArrayUri.clear() - mediaArrayList.clear() - CALLED"
-                            )
+
                             tempListMedia.clear()
-                            //mediaArrayList.clear()
                         }
                     }
                     if (result.data?.hasExtra("media_list") == true) {
                         val type: Type = object : TypeToken<List<AppMedia>>() {}.type
-                        Log.d(
-                            "startResultForMediaShow",
-                            "result.data?.getStringExtra(media_list)=>${
-                                result.data?.getStringExtra(
-                                    "media_list"
-                                )
-                            }"
-                        )
                         tempListMedia.addAll(
                             Gson().fromJson(
                                 result.data?.getStringExtra("media_list"),
                                 type
                             )
                         )
-                        Log.d(
-                            "startResultForMediaShow",
-                            "multiMediaList Add media Caption @0 mediaArrayList.size: ${mediaArrayList.size} - tempArrayUri.size: ${tempListMedia.size} - isMediaSelected: $isMediaSelected"
-                        )
+
                         if (isMediaSelected && (mediaArrayList.size != tempListMedia.size)) {
-                            Log.d(
-                                "startResultForMediaShow",
-                                "mediaArrayList.clear() -added All data CALLED ^^^^^^^^^^^^"
-                            )
+
                             mediaArrayList.clear()
                             mediaArrayList.addAll(tempListMedia)
                         } else {
-                            Log.d(
-                                "startResultForMediaShow",
-                                "Gone for set time for loop CALLED ^^^^^^^^^^^^"
-                            )
+
                             for (pnt in 0 until tempListMedia.size) {
                                 for (cnt in 0 until mediaArrayList.size) {
                                     if (mediaArrayList[cnt].absolute_path == tempListMedia[pnt].absolute_path)
@@ -494,10 +461,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         isMediaSelected = false
-                        Log.d(
-                            "startResultForMediaShow",
-                            "multiMediaList Add media Caption @1 mediaArrayList.size: ${mediaArrayList.size}"
-                        )
+
                     } else {
                         Log.d("startResultForMediaShow", "NOT SET MEDIA THUMB")
                     }
